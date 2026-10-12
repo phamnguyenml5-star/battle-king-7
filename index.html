@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="vi">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#090f25"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Battle King"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon.svg" type="image/svg+xml">
 <title>Battle King: Tower Ascension</title>
 <style>
 :root{--bg:#090f25;--panel:#101c3a;--line:#3a8dff;--gold:#ffd45a;--cyan:#54e8ff}
@@ -106,9 +106,24 @@ main{display:block!important;width:100%;height:100%;min-height:0;overflow:hidden
 #skillShopToggle{z-index:25!important}
 #skillShop{z-index:110!important}
 body.menu-screen #game{filter:brightness(.5)}
-#mobile{position:fixed;left:12px;right:12px;bottom:12px;z-index:20;display:none;pointer-events:none}
+#mobile{position:fixed;left:10px;right:10px;bottom:max(10px,env(safe-area-inset-bottom));z-index:20;display:none;pointer-events:none;align-items:end;gap:8px}
 #mobile button{pointer-events:auto}
 body.playing #mobile{display:flex}
+@media(max-width:850px){
+  #mobile{display:none;flex-direction:column;align-items:stretch;gap:8px;bottom:max(8px,env(safe-area-inset-bottom))}
+  body.playing #mobile{display:flex}
+  #mobile .pad{align-self:flex-start;grid-template-columns:repeat(3,42px);grid-template-rows:repeat(2,38px);gap:3px}
+  #mobile .pad button{min-height:36px;padding:2px;font-size:15px}
+  #mobile .mobile-skills{width:100%;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+  #mobile .mobile-skills button{min-width:0;width:100%;height:39px;padding:3px 1px;font-size:10px;line-height:1.1;white-space:normal;border-radius:9px}
+  #mobile .mobile-skills button[data-action="attack"]{grid-column:auto;width:100%;min-width:0;height:42px;font-size:15px}
+  #mobile .mobile-skills button[data-action="dash"]{position:static;width:100%;height:39px;font-size:10px}
+  #game{height:100dvh!important}
+}
+@media(max-width:390px){
+  #mobile .mobile-skills{grid-template-columns:repeat(4,minmax(0,1fr))}
+  #mobile .mobile-skills button{height:36px;font-size:9px}
+}
 #overlay{z-index:20;background:linear-gradient(135deg,#080e27eF,#111b42f5),radial-gradient(circle at 70% 25%,#345caa,#070b19);background-size:cover}
 #overlay .modal{max-width:680px;padding:clamp(22px,5vw,48px);border:3px solid #579dff;border-radius:8px;background:linear-gradient(160deg,#172c59,#091329);box-shadow:0 0 0 5px #111d3b,0 0 60px #287bff66}
 #overlay h1{font-size:clamp(32px,7vw,66px);line-height:1.05;text-shadow:4px 4px #7b321d,7px 7px #080e20;letter-spacing:1px}
@@ -317,22 +332,24 @@ body.menu-screen #gardenToggle{display:block;position:static;width:max-content;m
 #blockBlastPanel{display:none;position:fixed;inset:0;z-index:260;background:#030713ee;align-items:center;justify-content:center;padding:12px;color:#fff}
 #blockBlastPanel.show{display:flex}#blockBlastCard{width:min(560px,100%);max-height:95dvh;overflow:auto;background:linear-gradient(160deg,#182b50,#0a1025);border:2px solid #70e7ff;border-radius:18px;padding:14px;box-shadow:0 0 35px #42dfff55}
 #blockBlastTop{display:flex;align-items:center;justify-content:space-between;gap:8px}#blockBlastTop h2{font-size:20px;margin:0;color:#ffe27a}#blockBlastScore{font-size:18px;font-weight:1000;color:#7fffd7;text-align:center;margin:10px}
-#blockBlastGrid{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:4px;width:min(100%,430px);margin:0 auto;aspect-ratio:1;padding:6px;border-radius:12px;background:#060b18;border:1px solid #34527c;touch-action:manipulation}
+#blockBlastGrid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px;width:min(100%,430px);margin:0 auto;aspect-ratio:1;padding:6px;border-radius:12px;background:#060b18;border:1px solid #34527c;touch-action:none;user-select:none;-webkit-user-select:none}
+#blockBlastPieces,.bb-piece{touch-action:none;user-select:none;-webkit-user-select:none}
 .bb-cell{min-width:0;min-height:0;border-radius:4px;background:#17243a;border:1px solid #263b59;cursor:pointer;padding:0;box-shadow:none}
-.bb-cell.filled{background:linear-gradient(145deg,#51e7ff,#3286ff);border-color:#b2f5ff;box-shadow:inset 0 -3px #174f9e}
-.bb-cell.preview{outline:2px solid #fff4a8;background:#ffe16b;box-shadow:0 0 10px #ffe16bcc;transform:scale(.96)}
-.bb-cell.preview-invalid{outline:2px solid #ff6b86;background:#ff526633}
-.bb-cell.clearing{animation:bbClearCell .48s ease-in-out both}
-@keyframes bbClearCell{0%{transform:scale(1);opacity:1;filter:brightness(1)}35%{transform:scale(.78);opacity:.95;filter:brightness(2.4)}70%{transform:scale(.18);opacity:.55;filter:brightness(2)}100%{transform:scale(0);opacity:0;filter:brightness(3)}}
-.bb-drag-ghost{background:transparent!important;border:0!important;box-shadow:none!important;opacity:1!important;pointer-events:none!important}
-.bb-drag-ghost .bb-dot{background:#4ce5ff!important;box-shadow:0 0 8px #4ce5ff99!important}
-.bb-drag-ghost .bb-dot.empty{background:transparent!important;box-shadow:none!important}
+.bb-cell.filled{background:linear-gradient(145deg,#51e7ff,#3286ff);border-color:#b2f5ff;box-shadow:none}
+.bb-cell.preview{outline:2px solid #fff4a8;background:#ffe16b}
+.bb-drag-ghost{position:fixed;z-index:99999;display:grid;gap:3px;pointer-events:none;transform:translate(0,0);opacity:.96;filter:drop-shadow(0 2px 5px #0009)}.bb-drag-ghost span{width:22px;height:22px;border-radius:4px;background:linear-gradient(145deg,#51e7ff,#3286ff);border:1px solid #d5fbff;box-sizing:border-box}.bb-cell.preview{outline:2px solid #fff4a8;background:#ffe16b!important;border-color:#fff4a8!important}
 #blockBlastPieces{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
 .bb-piece{min-height:84px;background:#0a1730;border:2px solid #304c75;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:none;padding:6px}
-.bb-piece.selected{border-color:#ffe27a;box-shadow:0 0 12px #ffe27a66;background:#23304a}.bb-shape{display:grid;grid-auto-rows:7px;gap:2px}.bb-dot{border-radius:3px;background:#4ce5ff;box-shadow:inset 0 -2px #1471aa}.bb-dot.empty{background:transparent;box-shadow:none}
-#blockBlastMsg{min-height:20px;text-align:center;color:#c6dcff;font-size:12px;margin-top:9px}#blockBlastActions{display:flex;gap:8px;margin-top:10px}#blockBlastActions button{flex:1}\n#bbAchievements{margin-top:18px;padding:14px;border:1px solid #6b86b7;border-radius:13px;background:linear-gradient(145deg,#111d38,#091224)}#bbAchievements h3{margin:0 0 7px;color:#ffe27a}#bbAchievements p{font-size:12px;color:#c6dcff;margin:7px 0}.bb-achievement-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;color:#fff;font-size:13px}.bb-achievement-row b{color:#ffd76a;white-space:nowrap}#bbAchievements .bb-claim{font-weight:900;background:linear-gradient(135deg,#b8860b,#ffe27a);color:#17213b;border:1px solid #fff0a6;border-radius:8px;padding:7px 10px;white-space:nowrap}#bbAchievements .bb-claim:disabled{filter:grayscale(.7);opacity:.55}.bb-achievement-row{border-bottom:1px solid #263958}.bb-achievement-row .bb-ach-status{min-width:90px;text-align:right;font-size:12px;color:#dce8ff}
-@media(max-width:420px){#blockBlastCard{padding:9px}#blockBlastGrid{gap:3px;padding:4px}.bb-piece{min-height:72px}.bb-shape{grid-auto-rows:6px;gap:1px}.bb-dot{width:6px;height:6px}}
+.bb-piece.selected{border-color:#ffe27a;box-shadow:none;background:#23304a}.bb-shape{display:grid;grid-template-columns:repeat(4,13px);grid-auto-rows:13px;gap:3px}.bb-dot{border-radius:3px;background:#4ce5ff;box-shadow:none}.bb-dot.empty{background:transparent;box-shadow:none}
+#blockBlastMsg{min-height:20px;text-align:center;color:#c6dcff;font-size:12px;margin-top:9px}#blockBlastActions{display:flex;gap:8px;margin-top:10px}#blockBlastActions button{flex:1}
+@media(max-width:420px){#blockBlastCard{padding:9px}#blockBlastGrid{gap:3px;padding:4px}.bb-piece{min-height:72px}.bb-shape{grid-template-columns:repeat(4,11px);grid-auto-rows:11px;gap:2px}}
 
+
+/* Mobile movement joystick */
+#mobile .pad.joystick{display:flex;align-items:center;justify-content:center;width:116px;height:116px;min-width:116px;min-height:116px;grid-template-columns:none;grid-template-rows:none;touch-action:none;user-select:none;-webkit-user-select:none;}
+#mobile .joystick-ring{position:relative;width:108px;height:108px;border-radius:50%;border:2px solid #8adfff;background:radial-gradient(circle at 35% 28%,#315b8dcc,#091a36ee);box-shadow:inset 0 0 15px #0008,0 0 12px #39bfff44;touch-action:none;}
+#mobile .joystick-knob{position:absolute;left:50%;top:50%;width:46px;height:46px;transform:translate(-50%,-50%);border-radius:50%;border:2px solid #d8f7ff;background:linear-gradient(145deg,#75e7ff,#2378c9);box-shadow:0 3px 10px #0009;pointer-events:none;}
+@media(max-width:520px){#mobile .pad.joystick{width:100px;height:100px;min-width:100px;min-height:100px}#mobile .joystick-ring{width:94px;height:94px}#mobile .joystick-knob{width:42px;height:42px}}
 </style>
 
 <style id="mobile-round-controls-fix">
@@ -344,6 +361,31 @@ body.menu-screen #gardenToggle{display:block;position:static;width:max-content;m
 }
 @media(max-width:520px){#mobile .pad .dash{left:calc(50% + 10px)!important;bottom:calc(14vh + 22px)!important;width:58px!important;min-width:58px!important;max-width:58px!important;height:58px!important;min-height:58px!important;max-height:58px!important}#mobile .mobile-skills button[data-action="attack"]{right:calc(50% - 106px)!important;width:66px!important;min-width:66px!important;max-width:66px!important;height:66px!important;min-height:66px!important;max-height:66px!important}}
 @media(min-width:851px){#mobile .pad .dash,#mobile .mobile-skills button[data-action="attack"]{position:static;border-radius:50%;width:60px;height:60px;min-width:60px;padding:0;aspect-ratio:1/1}}
+</style>
+
+<style id="mobile-standalone-fix">
+html{min-height:100%;background:#090f25} body{min-height:100vh;min-height:100dvh;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+@media (display-mode: standalone){html,body{width:100%;height:100%;min-height:100%;overscroll-behavior:none} body{overflow-x:hidden}}
+</style>
+
+<style id="battleking-hud-polish">
+/* Visual polish only: keep existing layout and controls, improve color, outlines and typography. */
+#mobile, #mobile button, #mobile #moveJoystick { font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif !important; font-weight: 800 !important; letter-spacing: .2px !important; }
+#mobile .mobile-skills button { color:#f7fbff !important; background:linear-gradient(145deg,#253b70 0%,#111b3d 100%) !important; border:2px solid #70e8ff !important; border-radius:11px !important; box-shadow:0 3px 0 #071026, 0 0 10px #26cfff55, inset 0 1px 0 #ffffff33 !important; text-shadow:0 1px 2px #000 !important; }
+#mobile .mobile-skills button[data-action="menu"] { background:linear-gradient(180deg,#ffdc76,#ff9f36) !important; color:#251126 !important; border:3px solid #fff0b0 !important; box-shadow:0 4px 0 #a95118,0 0 14px #ffb13c77 !important; text-shadow:none !important; }
+#mobile .mobile-skills button[data-action="jump"] { border:3px solid #fff !important; border-radius:50% !important; background:linear-gradient(145deg,#54f3c0,#00a878) !important; color:#062a27 !important; box-shadow:0 4px 0 #00694f,0 0 18px #22ffc477,inset 0 2px 4px #ffffff88 !important; text-shadow:none !important; }
+#mobile .mobile-skills button[data-action="attack"] { border:3px solid #ffe2e8 !important; border-radius:50% !important; background:linear-gradient(145deg,#ff778f,#d71949) !important; color:#fff !important; box-shadow:0 4px 0 #7d102c,0 0 18px #ff315d99,inset 0 2px 4px #ffffff66 !important; }
+#mobile .mobile-skills button[data-action="dash"] { background:linear-gradient(145deg,#8eeaff,#218cf4) !important; color:#061b3b !important; border:2px solid #e0fbff !important; box-shadow:0 3px 0 #1254a0,0 0 12px #28baff77 !important; text-shadow:none !important; }
+#mobile .mobile-skills button[data-skill="1"] { border-color:#7dffb1 !important; }
+#mobile .mobile-skills button[data-skill="2"] { border-color:#7abaff !important; }
+#mobile .mobile-skills button[data-skill="3"] { border-color:#ffd16b !important; }
+#mobile .mobile-skills button[data-skill="9"] { border-color:#ff8be8 !important; }
+#mobile .mobile-skills button[data-skill="0"] { border-color:#c3b4ff !important; }
+#mobile .mobile-skills button[data-skill="11"] { border-color:#ffb36b !important; }
+#mobile #moveJoystick .joystick-ring { border:4px solid #d9faff !important; background:radial-gradient(circle at 35% 25%,#ffffffef,#8bdfffcc 70%,#2778b8dd) !important; box-shadow:0 0 0 2px #1878b8,0 0 18px #25cfff88,inset 0 2px 10px #ffffffaa !important; }
+#mobile #moveJoystick .joystick-knob { border:3px solid #e7fbff !important; background:linear-gradient(145deg,#4cf5ff,#0873d1) !important; box-shadow:0 2px 0 #064a91,0 0 12px #20dfff99 !important; }
+#mobile .mobile-skills button:active { filter:brightness(1.18) saturate(1.15) !important; transform:scale(.96) !important; }
+@media (min-width: 769px) { #mobile .mobile-skills button { font-size:14px !important; } }
 </style>
 </head>
 <body class="menu-screen">
@@ -365,7 +407,7 @@ body.menu-screen #gardenToggle{display:block;position:static;width:max-content;m
 <div id="adminPanel"><h3 style="display:flex;align-items:center;justify-content:space-between">👑 ADMIN <button id="closeAdminPanel" aria-label="Đóng bảng Admin" style="padding:2px 8px">×</button></h3><div class="adminGrid"><button id="adminFloorDown">➖ Giảm tầng</button><button id="adminFloorUp">➕ Tăng tầng</button><button id="adminBossBoost">☠ Boss ×10 máu</button><button id="adminSpawnBoss">🎯 Gọi boss</button><button id="adminHeal">💖 Hồi đầy máu</button><button id="adminClearCooldowns">⚡ Hủy hồi chiêu</button><button id="adminCoins">🪙 +100.000 xu</button><button id="adminBossFly" style="grid-column:1/-1">🌀 Bay + dịch chuyển tới Boss</button><button id="adminSpawnGem" style="grid-column:1/-1;background:linear-gradient(#1d9d9b,#12636f);border-color:#8ffff2">💎 Spawn Bảo Thạch (TEST)</button></div><div class="adminHint">Mỗi tầng boss có máu tăng cực mạnh. Nút bay sẽ đưa bạn tới boss rồi bật/tắt bay tự do. Mã lưu 6 số dùng để lưu/nạp trên cùng trình duyệt.</div></div>
 <div class="hudline"><span id="modeText">Chế độ: PvE — Tầng 1</span><span id="enemyText">Quái: Đang chờ</span><span id="questText">Nhiệm vụ: Hạ 3 quái (0/3)</span><span id="questTimer">🔄 Làm mới nhiệm vụ sau 30:00</span></div>
 <div id="mobile">
- <div class="pad"><button class="up" data-hold="jump">⬆</button><button class="left" data-hold="left">◀</button><button class="down" data-hold="down">⬇</button><button class="right" data-hold="right">▶</button></div>
+ <div class="pad joystick" id="moveJoystick" aria-label="Joystick di chuyển"><div class="joystick-ring"><div class="joystick-knob" id="joystickKnob"></div></div></div>
  <div class="mobile-skills"><button data-action="jump">⬆ Nhảy</button><button data-action="dash" aria-label="Lướt" title="Lướt (tối đa 2 lần)">💨 Lướt ×2</button><button data-action="attack" aria-label="Đánh thường" title="Đánh thường">⚔️</button><button data-skill="1">⬆ Nhảy đôi</button><button data-skill="2">🔵 Cầu xanh</button><button data-skill="3">🚗 Xe</button><button data-skill="9">⚔️ Vạn kiếm</button><button data-skill="0">⏳ Ngưng giờ</button><button data-skill="11">⛓️ Lồng (J)</button><button data-action="menu">☰ Menu</button></div>
 </div>
 
@@ -509,7 +551,7 @@ body.menu-screen #gardenToggle{display:block;position:static;width:max-content;m
  <div id="redeemPanel" role="dialog" aria-label="Nhập code nhận thưởng"><div id="redeemHead"><span>🎟️ CODE SỰ KIỆN</span><button id="redeemClose" type="button" aria-label="Đóng nhập code">✕</button></div><label for="redeemInput">Nhập mã quà tặng</label><input id="redeemInput" maxlength="40" autocomplete="off" placeholder="Nhập code..." /><button id="redeemSubmit" type="button">🎁 ĐỔI CODE</button><div id="redeemStatus">Mỗi mã chỉ sử dụng được một lần trên trình duyệt này.</div></div>
 </div>
 
-<div id="blockBlastPanel" role="dialog" aria-modal="true" aria-label="Block Blast tính điểm"><div id="blockBlastCard"><div id="blockBlastTop"><h2>🧩 BLOCK BLAST</h2><button id="blockBlastClose" type="button">✕ Đóng</button></div><div id="blockBlastScore">ĐIỂM: <span id="bbScore">0</span> · KỶ LỤC: <span id="bbBest">0</span></div><div id="blockBlastGrid" aria-label="Bàn Block Blast"></div><div id="blockBlastPieces" aria-label="Chọn khối"></div><div id="blockBlastMsg">Chọn một khối bên dưới, rồi chạm ô bắt đầu để đặt. Đầy hàng/cột sẽ được xóa!</div><div id="blockBlastActions"><button id="blockBlastRestart" type="button">🔄 Chơi lại</button><button id="blockBlastResetPieces" type="button">🔀 Reset khối · 500 xu</button><button id="blockBlastRotateBuy" type="button">🔄 Mua xoay · 200 xu</button><button id="blockBlastHow" type="button">❔ Cách chơi</button></div><section id="bbAchievements" aria-label="Thành tích Block Blast"><h3>🏆 THÀNH TÍCH</h3><p>Đạt mốc điểm trong một ván để mở khóa, rồi bấm nhận xu tại đây.</p><div id="bbAchievementList"></div><p id="bbAchievementNote">Mỗi mốc chỉ nhận thưởng một lần trên trình duyệt này.</p></section></div></div>
+<div id="blockBlastPanel" role="dialog" aria-modal="true" aria-label="Block Blast tính điểm"><div id="blockBlastCard"><div id="blockBlastTop"><h2>🧩 BLOCK BLAST</h2><button id="blockBlastClose" type="button">✕ Đóng</button></div><div id="blockBlastScore">ĐIỂM: <span id="bbScore">0</span> · KỶ LỤC: <span id="bbBest">0</span></div><div id="blockBlastGrid" aria-label="Bàn Block Blast"></div><div id="blockBlastPieces" aria-label="Chọn khối"></div><div id="blockBlastMsg">Chọn một khối bên dưới, rồi chạm ô bắt đầu để đặt. Đầy hàng/cột sẽ được xóa!</div><div id="blockBlastActions"><button id="blockBlastRestart" type="button">🔄 Chơi lại</button><button id="blockBlastResetPieces" type="button">🔀 Reset khối · 500 xu</button><button id="blockBlastHow" type="button">❔ Cách chơi</button></div></div></div>
 <div id="lobbyHint" style="display:none;position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:8;max-width:92vw;text-align:center;padding:10px 14px;border:2px solid #ffd45a;border-radius:12px;background:#08152eee;color:#fff;font-weight:800;box-shadow:0 0 20px #4fcfff55">🎡 SẢNH GIẢI TRÍ · A/D di chuyển · Space nhảy · E chọn khu/ ngồi ghế</div>
 <div id="lobbyZonePicker" aria-label="Chọn khu giải trí"><div style="font-weight:1000;color:#ffe28b;font-size:17px;text-align:center;margin-bottom:3px">🎡 CHỌN KHU GIẢI TRÍ</div><button id="lobbySoloBtn" type="button">👤 KHU RIÊNG CỦA MÌNH</button><button id="lobbyCommunityBtn" type="button">👥 KHU BẠN BÈ & MỌI NGƯỜI</button><div id="lobbyZoneNote">Chọn khu muốn đến</div><button id="lobbyChoiceCancel" type="button">↩ Quay lại menu</button></div>
 <div id="slotNpcPanel" role="dialog" aria-label="Nhiệm vụ mở slot chiêu"><div id="slotNpcHead"><span>🧙‍♂️ LÃO KIẾM SƯ · THỬ THÁCH NGŨ CHIÊU</span><button id="slotNpcClose" type="button" aria-label="Đóng hội thoại">✕</button></div><p id="slotNpcDialogue">“Muốn điều khiển thêm một chiêu? Hãy chứng minh bản lĩnh của con qua thử thách này!”</p><div id="slotNpcProgress"></div><button id="slotNpcAccept" type="button">📜 Nhận nhiệm vụ</button><div id="slotNpcStatus">Hoàn thành thử thách để mở khóa slot trang bị chiêu thứ 5.</div></div>
@@ -941,47 +983,24 @@ const openSettingsForSave=()=>{$('adminPanel').classList.remove('show');$('chatP
 (()=>{
  const panel=$('blockBlastPanel'),gridEl=$('blockBlastGrid'),piecesEl=$('blockBlastPieces');
  if(!panel||!gridEl||!piecesEl)return;
- const N=9, shapes=[[[0,0]],[[0,0],[0,1]],[[0,0],[1,0]],[[0,0],[0,1],[1,0]],[[0,0],[0,1],[0,2]],[[0,0],[1,0],[2,0]],[[0,0],[0,1],[0,2],[1,0]],[[0,0],[1,0],[1,1],[1,2]],[[0,0],[0,1],[1,0],[1,1]],[[0,0],[0,1],[0,2],[1,1]],[[0,0],[1,0],[2,0],[2,1]],[[0,0],[1,0],[1,1]]];
- // Khối đặc biệt 3×3 xuất hiện với xác suất 10%; các khối thường lấy từ shapes.
- const special3x3=Array.from({length:3},(_,y)=>Array.from({length:3},(_,x)=>[y,x])).flat();
- function randShape(){return Math.random()<0.10?special3x3.map(p=>p.slice()):shapes[Math.floor(Math.random()*shapes.length)].map(p=>p.slice());}
- let board,score,best,choices,selected=-1,over=false,placing=false,rotateMode=false;
- const achievementTiers=[{score:500,reward:1000},{score:1000,reward:1500},{score:2000,reward:2500},{score:3000,reward:3500},{score:5000,reward:6000},{score:7500,reward:9000},{score:10000,reward:15000}];
- const achievementUnlocked={},achievementClaimed={};
- try{achievementTiers.forEach(a=>{achievementUnlocked[a.score]=localStorage.getItem('bk-blockblast-achievement-'+a.score)==='1';achievementClaimed[a.score]=localStorage.getItem('bk-blockblast-achievement-'+a.score+'-claimed')==='1'})}catch(e){}
+ const N=8, shapes=[[[0,0]],[[0,0],[0,1]],[[0,0],[1,0]],[[0,0],[0,1],[1,0]],[[0,0],[0,1],[0,2]],[[0,0],[1,0],[2,0]],[[0,0],[0,1],[0,2],[1,0]],[[0,0],[1,0],[1,1],[1,2]],[[0,0],[0,1],[1,0],[1,1]],[[0,0],[0,1],[0,2],[1,1]],[[0,0],[1,0],[2,0],[2,1]],[[0,0],[1,0],[1,1]]];
+ let board,score,best,choices,selected=-1,over=false;
  try{best=Number(localStorage.getItem('bk-blockblast-best')||0)}catch(e){best=0}
- function updateAchievementUI(){const list=$('bbAchievementList');if(!list)return;list.innerHTML='';achievementTiers.forEach(a=>{const unlocked=!!achievementUnlocked[a.score],claimed=!!achievementClaimed[a.score];const row=document.createElement('div');row.className='bb-achievement-row';const label=document.createElement('span');label.textContent='🏅 '+a.score.toLocaleString('vi-VN')+' điểm · '+a.reward.toLocaleString('vi-VN')+' xu';const status=document.createElement('span');status.className='bb-ach-status';status.textContent=claimed?'✅ Đã nhận':unlocked?'🎉 Đã mở khóa':'🔒 Chưa đạt';const button=document.createElement('button');button.type='button';button.className='bb-claim';button.disabled=!unlocked||claimed;button.textContent=claimed?'Đã nhận':('🎁 Nhận '+a.reward.toLocaleString('vi-VN')+' xu');button.addEventListener('click',()=>{if(!achievementUnlocked[a.score]||achievementClaimed[a.score])return;state.coins=(Number(state.coins)||0)+a.reward;achievementClaimed[a.score]=true;try{localStorage.setItem('bk-blockblast-achievement-'+a.score+'-claimed','1')}catch(e){}stats();saveQuiet();updateAchievementUI();msg('🏆 Nhận thành tích '+a.score.toLocaleString('vi-VN')+' điểm: +'+a.reward.toLocaleString('vi-VN')+' xu!')});row.append(label,status,button);list.appendChild(row)})}
- function unlockAchievements(){let newly=[];achievementTiers.forEach(a=>{if(score>=a.score&&!achievementUnlocked[a.score]){achievementUnlocked[a.score]=true;try{localStorage.setItem('bk-blockblast-achievement-'+a.score,'1')}catch(e){}newly.push(a.score)}});if(newly.length)msg('🏆 Mở khóa thành tích: '+newly.map(x=>x.toLocaleString('vi-VN')+' điểm').join(', ')+'. Kéo xuống nhận xu!');updateAchievementUI()}
- function reset(){placing=false;rotateMode=false;updateRotateButton();board=Array.from({length:N},()=>Array(N).fill(0));score=0;choices=[randShape(),randShape(),randShape()];selected=-1;over=false;render();msg('Kéo khối bên dưới thả vào bàn, hoặc chọn khối rồi chạm ô muốn đặt.');}
- function updateRotateButton(){const b=$('blockBlastRotateBuy');if(!b)return;b.textContent=rotateMode?'🔄 ĐANG XOAY · BẤM KHỐI':'🔄 Mua xoay · 200 xu';b.style.borderColor=rotateMode?'#7fffd7':'';}
- function rotateShape(sh){if(!sh)return sh;const maxY=Math.max(...sh.map(p=>p[0]));const turned=sh.map(([y,x])=>[x,maxY-y]);const minY=Math.min(...turned.map(p=>p[0])),minX=Math.min(...turned.map(p=>p[1]));return turned.map(([y,x])=>[y-minY,x-minX]);}
+ const randShape=()=>shapes[Math.floor(Math.random()*shapes.length)].map(p=>p.slice());
+ function reset(){board=Array.from({length:N},()=>Array(N).fill(0));score=0;choices=[randShape(),randShape(),randShape()];selected=-1;over=false;render();msg('Kéo khối bên dưới thả vào bàn, hoặc chọn khối rồi chạm ô muốn đặt.');}
  function msg(t){$('blockBlastMsg').textContent=t}
  function canPlace(shape,r,c){return shape.every(([y,x])=>r+y<N&&c+x<N&&!board[r+y][c+x])}
  function render(){ $('bbScore').textContent=score;$('bbBest').textContent=best;gridEl.innerHTML='';for(let r=0;r<N;r++)for(let c=0;c<N;c++){const b=document.createElement('button');b.type='button';b.className='bb-cell'+(board[r][c]?' filled':'');b.setAttribute('aria-label',`Hàng ${r+1}, cột ${c+1}`);b.addEventListener('click',()=>place(r,c));gridEl.appendChild(b)}
- piecesEl.innerHTML='';choices.forEach((sh,i)=>{const b=document.createElement('button');b.type='button';b.className='bb-piece'+(selected===i?' selected':'');b.disabled=!sh||over;b.setAttribute('aria-label',`Chọn khối ${i+1}`);if(sh){const wrap=document.createElement('div');wrap.className='bb-shape';const h=Math.max(...sh.map(p=>p[0]))+1,w=Math.max(...sh.map(p=>p[1]))+1,previewCols=Math.max(4,w);wrap.style.gridTemplateColumns=`repeat(${previewCols},7px)`;for(let y=0;y<Math.max(3,h);y++)for(let x=0;x<previewCols;x++){const d=document.createElement('span');d.className='bb-dot'+(sh.some(([a,z])=>a===y&&z===x)?'':' empty');wrap.appendChild(d)}b.appendChild(wrap)}let didDrag=false,dragging=false,ghost=null,startX=0,startY=0;
- b.addEventListener('pointerdown',e=>{if(over||!choices[i])return;dragging=true;didDrag=false;startX=e.clientX;startY=e.clientY;ghost=b.cloneNode(true);ghost.classList.add('bb-drag-ghost');ghost.style.cssText='position:fixed;z-index:9999;pointer-events:none;opacity:.92;transform:scale(1.12);width:'+b.getBoundingClientRect().width+'px;height:'+b.getBoundingClientRect().height+'px;left:'+(e.clientX-b.getBoundingClientRect().width/2)+'px;top:'+(e.clientY-b.getBoundingClientRect().height/2)+'px';document.body.appendChild(ghost);b.setPointerCapture(e.pointerId);e.preventDefault();});
- b.addEventListener('pointermove',e=>{if(!dragging||!ghost)return;if(Math.abs(e.clientX-startX)+Math.abs(e.clientY-startY)>7)didDrag=true;ghost.style.left=(e.clientX-ghost.offsetWidth/2)+'px';ghost.style.top=(e.clientY-ghost.offsetHeight/2)+'px';gridEl.querySelectorAll('.bb-cell.preview,.bb-cell.preview-invalid').forEach(x=>x.classList.remove('preview','preview-invalid'));const target=document.elementFromPoint(e.clientX,e.clientY);if(target&&target.classList.contains('bb-cell')){const idx=Array.prototype.indexOf.call(gridEl.children,target),r=Math.floor(idx/N),c=idx%N,valid=canPlace(choices[i],r,c);choices[i].forEach(([dy,dx])=>{if(r+dy<N&&c+dx<N){const cell=gridEl.children[(r+dy)*N+c+dx];cell.classList.add(valid?'preview':'preview-invalid')}})}});
- const endDrag=e=>{if(!dragging)return;dragging=false;if(ghost){ghost.remove();ghost=null}gridEl.querySelectorAll('.bb-cell.preview,.bb-cell.preview-invalid').forEach(x=>x.classList.remove('preview','preview-invalid'));if(didDrag){const target=document.elementFromPoint(e.clientX,e.clientY);if(target&&target.classList.contains('bb-cell')){const idx=Array.prototype.indexOf.call(gridEl.children,target),r=Math.floor(idx/N),c=idx%N;selected=i;place(r,c)}else msg('Kéo khối thả vào bàn 9×9 nhé bro!')} };b.addEventListener('pointerup',endDrag);b.addEventListener('pointercancel',endDrag);
- b.addEventListener('click',()=>{if(didDrag){didDrag=false;return}if(over||!choices[i])return;if(rotateMode){choices[i]=rotateShape(choices[i]);selected=i;render();msg('🔄 Đã xoay khối '+(i+1)+' 90°. Bấm tiếp để xoay tiếp, hoặc kéo khối vào bàn khi vừa ý.');return}selected=i;render();msg('Đã chọn khối '+(i+1)+'. Kéo khối vào bàn hoặc chạm ô muốn đặt.');});piecesEl.appendChild(b)});}
- function place(r,c){if(over||placing)return;if(selected<0||!choices[selected]){msg('Kéo một khối vào bàn hoặc chọn khối trước nhé!');return}const sh=choices[selected];if(!canPlace(sh,r,c)){msg('Không đặt được ở đây — thử vị trí khác.');return}sh.forEach(([y,x])=>board[r+y][c+x]=1);score+=sh.length;const rows=[],cols=[];for(let y=0;y<N;y++)if(board[y].every(Boolean))rows.push(y);for(let x=0;x<N;x++)if(board.every(row=>row[x]))cols.push(x);const cleared=rows.length+cols.length;choices[selected]=null;selected=-1;rotateMode=false;updateRotateButton();
- if(cleared){placing=true;const clearSet=new Set();rows.forEach(y=>{for(let x=0;x<N;x++)clearSet.add(y*N+x)});cols.forEach(x=>{for(let y=0;y<N;y++)clearSet.add(y*N+x)});clearSet.forEach(idx=>gridEl.children[idx]?.classList.add('clearing'));msg('✨ Đang xóa '+rows.length+' hàng và '+cols.length+' cột...');setTimeout(()=>{rows.forEach(y=>board[y].fill(0));cols.forEach(x=>{for(let y=0;y<N;y++)board[y][x]=0});const lineBonus=cleared===1?50:(cleared>=2?500:0);score+=lineBonus;
- const perfect=board.every(row=>row.every(v=>!v));
- if(perfect){score+=1000;msg('✨ PERFECT! +1000 điểm!');}
- finishPlace(cleared,rows.length,cols.length,perfect,lineBonus);},500);
- }else finishPlace(0,0,0);
- }
- function finishPlace(cleared,rowCount,colCount,perfect=false,lineBonus=0){
- if(score>best){best=score;try{localStorage.setItem('bk-blockblast-best',String(best))}catch(e){}}
- let notes=[];
- if(cleared)notes.push(`✨ Xóa ${rowCount} hàng + ${colCount} cột: +${lineBonus} điểm`);
- if(perfect)notes.push('🌟 PERFECT! Bàn trống hoàn toàn: +1000 điểm');
- const priorUnlocked=achievementTiers.filter(a=>achievementUnlocked[a.score]).length;unlockAchievements();const newUnlocked=achievementTiers.filter(a=>achievementUnlocked[a.score]).length-priorUnlocked;if(newUnlocked>0)notes.push('🏆 Mở khóa '+newUnlocked+' thành tích mới! Kéo xuống mục THÀNH TÍCH để nhận xu.');
- if(choices.every(x=>!x))choices=[randShape(),randShape(),randShape()];
- render();placing=false;msg(notes.length?notes.join(' · '):'Đặt khối thành công!');
- if(!choices.some(sh=>sh&&Array.from({length:N},(_,y)=>Array.from({length:N},(_,x)=>canPlace(sh,y,x))).some(a=>a.some(Boolean)))){over=true;render();msg('Hết nước đi! Điểm: '+score+'. Bấm Chơi lại để thử lần nữa.')}
-}
- const openMiniGemBlockBlast=()=>{panel.classList.add('show');reset()};$('miniGemBlockBlast').addEventListener('click',openMiniGemBlockBlast);$('blockBlastClose').addEventListener('click',()=>panel.classList.remove('show'));panel.addEventListener('click',e=>{if(e.target===panel)panel.classList.remove('show')});$('blockBlastRestart').addEventListener('click',reset);$('blockBlastRotateBuy').addEventListener('click',()=>{if(over){msg('Ván đã kết thúc — bấm Chơi lại trước nhé.');return}if(rotateMode){msg('Đang bật xoay miễn phí cho tới khi đặt được một khối. Bấm khối để xoay tiếp nhé!');return}if(state.coins<200){msg('Không đủ xu! Cần 200 xu để mua quyền xoay khối.');return}state.coins-=200;stats();saveQuiet();rotateMode=true;updateRotateButton();msg('🔄 Đã mua quyền xoay khối với 200 xu! Bấm khối bất kỳ để xoay 90° mỗi lần; kéo vào bàn khi vừa ý.');});$('blockBlastResetPieces').addEventListener('click',()=>{if(over){msg('Ván đã kết thúc — bấm Chơi lại trước nhé.');return}if(state.coins<500){msg('Không đủ xu! Cần 500 xu để reset 3 khối.');return}if(!choices.some(Boolean)){msg('Không có khối nào để reset.');return}state.coins-=500;stats();saveQuiet();choices=[randShape(),randShape(),randShape()];selected=-1;render();msg('Đã reset 3 khối mới! Đã trừ 500 xu.');});$('blockBlastHow').addEventListener('click',()=>msg('Kéo 3 khối lên bàn 9×9. Mua xoay khối giá 200 xu để bấm khối xoay 90° mỗi lần cho tới khi đặt khối; khối đặc biệt 3×3 có tỉ lệ xuất hiện 10%. Xóa 1 hàng/cột: +50 điểm; xóa cùng lúc 2–6 hàng/cột: +500 điểm. Làm trống toàn bàn: PERFECT +1000 điểm. Đạt 500 điểm lần đầu nhận +1000 xu; kỷ lục lưu trên trình duyệt.'));
- updateAchievementUI();
+ piecesEl.innerHTML='';choices.forEach((sh,i)=>{const b=document.createElement('button');b.type='button';b.className='bb-piece'+(selected===i?' selected':'');b.disabled=!sh||over;b.setAttribute('aria-label',`Chọn khối ${i+1}`);if(sh){const wrap=document.createElement('div');wrap.className='bb-shape';const h=Math.max(...sh.map(p=>p[0]))+1,w=Math.max(...sh.map(p=>p[1]))+1;for(let y=0;y<Math.max(3,h);y++)for(let x=0;x<Math.max(4,w);x++){const d=document.createElement('span');d.className='bb-dot'+(sh.some(([a,z])=>a===y&&z===x)?'':' empty');wrap.appendChild(d)}b.appendChild(wrap)}let didDrag=false,dragging=false,ghost=null,startX=0,startY=0;
+ const clearPreview=()=>gridEl.querySelectorAll('.bb-cell.preview').forEach(x=>x.classList.remove('preview'));
+ const makeGhost=()=>{ghost=document.createElement('div');ghost.className='bb-drag-ghost';const gh=Math.max(...choices[i].map(p=>p[0]))+1,gw=Math.max(...choices[i].map(p=>p[1]))+1;ghost.style.gridTemplateColumns=`repeat(${gw},22px)`;ghost.style.gridTemplateRows=`repeat(${gh},22px)`;choices[i].forEach(([yy,xx])=>{const d=document.createElement('span');d.style.gridColumn=String(xx+1);d.style.gridRow=String(yy+1);ghost.appendChild(d)});document.body.appendChild(ghost)};
+ b.addEventListener('pointerdown',e=>{if(over||!choices[i])return;dragging=true;didDrag=false;startX=e.clientX;startY=e.clientY;selected=i;makeGhost();ghost.style.left=(e.clientX-ghost.offsetWidth/2)+'px';ghost.style.top=(e.clientY-ghost.offsetHeight/2)+'px';try{b.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault();});
+ const moveDrag=e=>{if(!dragging)return;if(Math.abs(e.clientX-startX)+Math.abs(e.clientY-startY)>3)didDrag=true;if(ghost){ghost.style.left=(e.clientX-ghost.offsetWidth/2)+'px';ghost.style.top=(e.clientY-ghost.offsetHeight/2)+'px';}clearPreview();const gr=gridEl.getBoundingClientRect();if(e.clientX>=gr.left&&e.clientX<=gr.right&&e.clientY>=gr.top&&e.clientY<=gr.bottom){const c=Math.max(0,Math.min(N-1,Math.floor((e.clientX-gr.left)/gr.width*N))),r=Math.max(0,Math.min(N-1,Math.floor((e.clientY-gr.top)/gr.height*N)));const sh=choices[i];sh.forEach(([dy,dx])=>{const rr=r+dy,cc=c+dx;if(rr<N&&cc<N)gridEl.children[rr*N+cc]?.classList.add('preview')})}};
+ const endDrag=e=>{if(!dragging)return;dragging=false;if(ghost){ghost.remove();ghost=null}clearPreview();if(didDrag){const gr=gridEl.getBoundingClientRect();if(e.clientX>=gr.left&&e.clientX<=gr.right&&e.clientY>=gr.top&&e.clientY<=gr.bottom){const c=Math.max(0,Math.min(N-1,Math.floor((e.clientX-gr.left)/gr.width*N))),r=Math.max(0,Math.min(N-1,Math.floor((e.clientY-gr.top)/gr.height*N)));selected=i;place(r,c)}else msg('Thả khối vào bàn 8×8 nhé bro!')}else{selected=i;render();msg('Đã chọn khối. Chạm ô muốn đặt hoặc kéo thẳng lên bàn!')}};b.addEventListener('pointermove',moveDrag);b.addEventListener('pointerup',endDrag);b.addEventListener('pointercancel',endDrag);
+ b.addEventListener('click',()=>{if(didDrag){didDrag=false;return}if(over||!choices[i])return;selected=i;render();msg('Đã chọn khối '+(i+1)+'. Kéo khối vào bàn hoặc chạm ô muốn đặt.');});piecesEl.appendChild(b)});}
+ function place(r,c){if(over)return;if(selected<0||!choices[selected]){msg('Kéo một khối vào bàn hoặc chọn khối trước nhé!');return}const sh=choices[selected];if(!canPlace(sh,r,c)){msg('Không đặt được ở đây — thử vị trí khác.');return}sh.forEach(([y,x])=>board[r+y][c+x]=1);score+=sh.length;const rows=[],cols=[];for(let y=0;y<N;y++)if(board[y].every(Boolean))rows.push(y);for(let x=0;x<N;x++)if(board.every(row=>row[x]))cols.push(x);rows.forEach(y=>board[y].fill(0));cols.forEach(x=>{for(let y=0;y<N;y++)board[y][x]=0});const cleared=rows.length+cols.length;if(cleared)score+=cleared*10+Math.max(0,cleared-1)*5;if(score>best){best=score;try{localStorage.setItem('bk-blockblast-best',String(best))}catch(e){}}
+ choices[selected]=null;selected=-1;if(choices.every(x=>!x)){choices=[randShape(),randShape(),randShape()]}render();msg(cleared?`Tuyệt! Đã xóa ${rows.length} hàng và ${cols.length} cột. +${cleared*10+Math.max(0,cleared-1)*5} điểm thưởng.`:'Đặt khối thành công!');if(!choices.some(sh=>sh&&Array.from({length:N},(_,y)=>Array.from({length:N},(_,x)=>canPlace(sh,y,x))).some(a=>a.some(Boolean)))){over=true;render();msg('Hết nước đi! Điểm: '+score+'. Bấm Chơi lại để thử lần nữa.')}}
+ const openMiniGemBlockBlast=()=>{panel.classList.add('show');reset()};$('miniGemBlockBlast').addEventListener('click',openMiniGemBlockBlast);$('blockBlastClose').addEventListener('click',()=>panel.classList.remove('show'));panel.addEventListener('click',e=>{if(e.target===panel)panel.classList.remove('show')});$('blockBlastRestart').addEventListener('click',reset);$('blockBlastResetPieces').addEventListener('click',()=>{if(over){msg('Ván đã kết thúc — bấm Chơi lại trước nhé.');return}if(state.coins<500){msg('Không đủ xu! Cần 500 xu để reset 3 khối.');return}if(!choices.some(Boolean)){msg('Không có khối nào để reset.');return}state.coins-=500;stats();saveQuiet();choices=[randShape(),randShape(),randShape()];selected=-1;render();msg('Đã reset 3 khối mới! Đã trừ 500 xu.');});$('blockBlastHow').addEventListener('click',()=>msg('Kéo 3 khối lần lượt lên bàn 8×8, hoặc chạm chọn khối rồi chạm ô muốn đặt. Đủ một hàng hoặc cột sẽ bị xóa. Mỗi ô đặt được +1, mỗi hàng/cột xóa +10 điểm; kỷ lục lưu trên trình duyệt này.'));
 })();
 
 $('soundBtn').onclick=()=>{state.sound=!state.sound;$('soundBtn').textContent='Âm thanh: '+(state.sound?'bật':'tắt');log('Đã '+(state.sound?'bật':'tắt')+' trạng thái âm thanh (hiệu ứng âm thanh chưa được tích hợp).')};
@@ -990,6 +1009,7 @@ function showMainMenu(){active=false;document.body.classList.remove('lobby-mode'
 window.addEventListener('beforeunload',()=>saveQuiet());document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveQuiet()});
 window.addEventListener('keydown',e=>{const target=e.target;const typing=target&&(target.matches('input,textarea,select')||target.isContentEditable);if(typing)return;let k=e.key.toLowerCase();if(k==='escape'){showMainMenu();return}if(['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault();keys[k.replace('arrow','')]=true;if(k==='q'){e.preventDefault();skill('dash')}if(k==='x')attack();if(k==='i')shootPlane();if(k==='j'&&state.ownedSkills.includes(11)&&state.equippedSkills.includes(11))useKingSkill(11);if(k==='k')useKingSkill(12);if(k==='l')useKingSkill(13);if(k==='b')useAtomicBomb();if(k==='e'&&state.mode==='Lobby')lobbyInteract();if(k===' ')jump();if(k==='1')useKingSkill(1);if(k==='2')useKingSkill(2);if(k==='3')useKingSkill(3);if(k==='4')useKingSkill(4);if(k==='5')useKingSkill(5);if(k==='6')useKingSkill(6);if(k==='7')useKingSkill(7);if(k==='8')useKingSkill(8);if(k==='9')useKingSkill(9);if(k==='0')useKingSkill(0)});
 window.addEventListener('keyup',e=>{let k=e.key.toLowerCase();keys[k.replace('arrow','')]=false});canvas.addEventListener('pointerdown',e=>{let r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*canvas.width,y=(e.clientY-r.top)/r.height*canvas.height;if(x>canvas.width-125&&y<55){showMainMenu();return}if(state.mode==='Lobby'){const worldX=x+cameraX;if(Math.abs(worldX-2500)<82&&y>300&&y<440)openRoleNpc();else if(Math.abs(worldX-2300)<78&&y>315&&y<440)openCraftNpc();else if(Math.abs(worldX-1285)<75&&y>315&&y<440)openSlotNpc()}});
+(()=>{const base=document.getElementById('moveJoystick'),knob=document.getElementById('joystickKnob');if(!base||!knob)return;let pid=null;const clear=()=>{keys.left=false;keys.right=false;keys.down=false;knob.style.left='50%';knob.style.top='50%';pid=null};const move=e=>{if(pid!==e.pointerId)return;e.preventDefault();const r=base.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let dx=e.clientX-cx,dy=e.clientY-cy;const max=Math.min(r.width,r.height)*.30,dist=Math.hypot(dx,dy);if(dist>max){dx=dx/dist*max;dy=dy/dist*max}knob.style.left=`calc(50% + ${dx}px)`;knob.style.top=`calc(50% + ${dy}px)`;keys.left=dx < -12;keys.right=dx > 12;keys.down=dy > 18;if(dy < -25&&!base.dataset.jumping){base.dataset.jumping='1';jump()}if(dy>=-10)delete base.dataset.jumping};base.addEventListener('pointerdown',e=>{e.preventDefault();pid=e.pointerId;try{base.setPointerCapture(pid)}catch(_){}move(e)});base.addEventListener('pointermove',move);['pointerup','pointercancel','lostpointercapture'].forEach(t=>base.addEventListener(t,e=>{if(pid===e.pointerId)clear()}));})();
 document.querySelectorAll('[data-hold]').forEach(b=>{let k=b.dataset.hold;const on=e=>{e.preventDefault();keys[k]=true},off=e=>{e.preventDefault();keys[k]=false};b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('pointerleave',off)});
 document.querySelectorAll('[data-skill]').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();const id=Number(b.dataset.skill);if(id===14)useAtomicBomb();else useKingSkill(id)}));document.querySelectorAll('[data-action]').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();let a=b.dataset.action;if(a==='attack')attack();else if(a==='dash')skill('dash');else if(a==='jump')jump();else if(a==='shoot')shoot();else if(a==='menu')showMainMenu()}));
 $('skillShopToggle').onclick=()=>{$('skillShop').classList.toggle('hidden');renderSkillUI()};
@@ -1335,6 +1355,28 @@ body.bk-auth-gate #accountPanel .account-card { max-height:94dvh; overflow:auto;
 #bkArenaRules p{margin:10px 0;line-height:1.55;font-size:clamp(14px,2.6vw,17px)}
 #bkArenaRules .bk-rule-warning{color:#ffd978;font-weight:800}
 #bkArenaRules button{display:block;margin:20px auto 0;border:0;border-radius:10px;padding:12px 30px;background:#43d9ff;color:#06152d;font-weight:900;font-size:17px;cursor:pointer;box-shadow:0 4px 0 #1678b2}
+
+/* Requested unified PC + phone combat HUD: joystick, separate jump/attack, compact skill rail. */
+#mobile{display:none;position:fixed!important;inset:0!important;z-index:1000!important;pointer-events:none!important;margin:0!important;gap:0!important;align-items:initial!important;justify-content:initial!important}
+body.playing #mobile{display:block!important}
+#mobile .pad,#mobile .mobile-skills{pointer-events:none!important}
+#mobile #moveJoystick{display:block!important;position:fixed!important;left:28px!important;bottom:18px!important;width:78px!important;height:78px!important;min-width:78px!important;min-height:78px!important;touch-action:none!important;pointer-events:auto!important}
+#moveJoystick .joystick-ring{position:absolute!important;inset:0!important;border:5px solid #050505!important;border-radius:50%!important;background:#ffffffdd!important;box-sizing:border-box!important}
+#moveJoystick .joystick-knob{position:absolute!important;left:50%;top:50%;width:32px!important;height:32px!important;transform:translate(-50%,-50%)!important;border:3px solid #000!important;border-radius:50%!important;background:#159fe8!important;box-sizing:border-box!important}
+#mobile .mobile-skills{display:block!important;pointer-events:none!important}
+#mobile .mobile-skills button{pointer-events:auto!important;position:fixed!important;box-sizing:border-box!important;min-width:0!important;min-height:0!important;max-width:none!important;max-height:none!important;padding:4px 7px!important;font-size:13px!important;border:3px solid #050505!important;border-radius:0!important;background:#fff!important;color:#111!important;box-shadow:none!important;touch-action:manipulation!important}
+#mobile .mobile-skills button[data-action="jump"]{right:122px!important;bottom:18px!important;width:68px!important;height:68px!important;border-radius:50%!important;border:4px solid #050505!important;font-size:15px!important;background:#fff!important}
+#mobile .mobile-skills button[data-action="attack"]{right:28px!important;bottom:18px!important;width:78px!important;height:78px!important;border-radius:50%!important;border:4px solid #009fe8!important;font-size:15px!important;background:#fff!important}
+#mobile .mobile-skills button[data-action="dash"]{left:12px!important;top:46%!important;width:62px!important;height:28px!important;border:3px solid #009fe8!important;font-size:12px!important}
+#mobile .mobile-skills button[data-action="menu"]{left:30%!important;top:8px!important;width:30%!important;height:32px!important;font-size:18px!important}
+#mobile .mobile-skills button[data-skill]{right:12px!important;width:66px!important;height:28px!important;font-size:11px!important;overflow:hidden!important;white-space:nowrap!important}
+#mobile .mobile-skills button[data-skill="1"]{top:22px!important}
+#mobile .mobile-skills button[data-skill="2"]{top:58px!important}
+#mobile .mobile-skills button[data-skill="3"]{top:94px!important}
+#mobile .mobile-skills button[data-skill="9"]{top:130px!important}
+#mobile .mobile-skills button[data-skill="0"]{top:166px!important}
+#mobile .mobile-skills button[data-skill="11"]{top:202px!important}
+@media(max-width:520px){#mobile #moveJoystick{left:18px!important;bottom:14px!important;width:72px!important;height:72px!important;min-width:72px!important;min-height:72px!important}#mobile .mobile-skills button[data-action="jump"]{right:104px!important;bottom:14px!important;width:64px!important;height:64px!important}#mobile .mobile-skills button[data-action="attack"]{right:18px!important;bottom:10px!important;width:76px!important;height:76px!important}#mobile .mobile-skills button[data-action="menu"]{left:30%!important;width:31%!important}#mobile .mobile-skills button[data-skill]{right:8px!important;width:60px!important;font-size:10px!important}}
 </style>
 <div id="bkArenaRules" role="dialog" aria-modal="true" aria-labelledby="bkArenaRulesTitle">
  <div class="bk-rules-card">
@@ -1459,4 +1501,42 @@ body.bk-auth-gate #accountPanel .account-card { max-height:94dvh; overflow:auto;
 })();
 </script>
 
+
+<script>
+// Enables installable app shell; browser chrome hides when launched from home-screen icon.
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+  window.addEventListener('load', function(){ navigator.serviceWorker.register('./sw.js').catch(function(err){ console.warn('PWA service worker registration failed', err); }); });
+}
+</script>
+
+<style id="battleking-floral-polish">
+/* Decorative hand-drawn floral accents; never intercept gameplay touches. */
+#mobile::before,#mobile::after{content:"✿  ❀  ✿";position:absolute;z-index:0;pointer-events:none;font-family:Georgia,serif;font-size:clamp(18px,2.2vw,28px);letter-spacing:5px;color:#ff8fc8;text-shadow:0 0 5px #ffb5dc,1px 2px 0 #6d3d91;opacity:.92}
+#mobile::before{left:4px;top:-25px;transform:rotate(-9deg)}
+#mobile::after{right:5px;top:-24px;color:#8cecff;text-shadow:0 0 5px #8cecff,1px 2px 0 #315aa8;transform:rotate(8deg)}
+#mobile .pad,#mobile .mobile-skills{position:relative;z-index:1}
+#mobile .mobile-skills button[data-skill="1"]{font-size:0!important;position:relative;min-width:42px}
+#mobile .mobile-skills button[data-skill="1"]::after{content:"⬆";font-size:20px;line-height:1}
+#skillHud button[data-skill="1"] small{display:none!important}
+#skillHud button[data-skill="1"]{position:relative}
+#skillHud button[data-skill="1"]::after{content:"✿";position:absolute;right:3px;top:1px;font-size:11px;color:#ff9bce;pointer-events:none}
+@media(max-width:700px){#mobile::before,#mobile::after{font-size:20px;letter-spacing:3px;top:-22px}}
+
+/* Fix: keep skill buttons inside the mobile control cluster; prevent skill 1 from covering the Skill Shop. */
+@media (max-width: 850px) {
+  #mobile .mobile-skills { position: relative !important; display: grid !important; }
+  #mobile .mobile-skills button[data-skill] {
+    position: static !important; inset: auto !important; top: auto !important; right: auto !important;
+    left: auto !important; bottom: auto !important; transform: none !important;
+    width: 100% !important; min-width: 0 !important; height: 39px !important;
+    font-size: 10px !important; overflow: visible !important; white-space: normal !important;
+  }
+  #mobile .mobile-skills button[data-skill="1"] { font-size: 10px !important; }
+  #mobile .mobile-skills button[data-skill="1"]::after { content: none !important; display: none !important; }
+  #skillShopToggle { z-index: 120 !important; }
+}
+@media (max-width: 390px) {
+  #mobile .mobile-skills button[data-skill] { height: 36px !important; font-size: 9px !important; }
+}
+</style>
 </body></html>
